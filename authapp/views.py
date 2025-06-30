@@ -91,6 +91,8 @@ def register_view(request):
     context['step'] = request.session['step']
     return render(request, 'authapp/register.html', context)
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.http import JsonResponse
 
 def login_view(request):
     from .forms import LoginForm
@@ -102,23 +104,30 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
 
-            # Check if user exists with given email
             try:
                 user = User.objects.get(email=email)
                 user = authenticate(request, username=user.username, password=password)
 
-                if user is not None:
+                if user:
                     login(request, user)
-                    return redirect('/dashboard/')
+
+                    # Generate JWT tokens
+                    refresh = RefreshToken.for_user(user)
+                    return JsonResponse({
+                        'access': str(refresh.access_token),
+                        'refresh': str(refresh),
+                        'message': "Login successful",
+                    })
                 else:
-                    context['error'] = "Invalid email or password"
+                    context['error'] = "Invalid credentials"
             except User.DoesNotExist:
-                context['error'] = "Invalid email or password"
+                context['error'] = "Invalid credentials"
     else:
         form = LoginForm()
 
     context['form'] = form
     return render(request, 'authapp/login.html', context)
+
 
 
 
@@ -202,3 +211,7 @@ def reset_password_view(request):
 
     context = {"email": email}
     return render(request, 'authapp/reset_password.html', context)
+from django.shortcuts import render
+
+def home_view(request):
+    return render(request, 'authapp/home.html')

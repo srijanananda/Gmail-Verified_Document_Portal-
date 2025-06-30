@@ -22,5 +22,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('authapp.urls')),  # 🔗 added
+    path('', include('authapp.urls')),  # So / maps to home_view
+
 ]
 

@@ -19,3 +19,30 @@
     <p><a href="/">Back to Home</a></p>
 </body>
 </html>
+<script>
+document.querySelector('form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const email = document.querySelector('input[name=email]').value;
+  const password = document.querySelector('input[name=password]').value;
+
+  const response = await fetch("{% url 'login' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ email, password })
+  });
+
+  const data = await response.json();
+  if (data.access) {
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
+    alert("Login successful");
+    window.location.href = "/dashboard/";
+  } else {
+    alert(data.error || "Login failed");
+  }
+});
+

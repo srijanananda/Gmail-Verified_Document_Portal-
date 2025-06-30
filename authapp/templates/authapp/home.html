@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding-top: 100px; }
+    button {
+      padding: 10px 20px;
+      margin: 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the Auth System</h1>
+  <a href="{% url 'login' %}"><button>Login</button></a>
+  <a href="{% url 'register' %}"><button>Register</button></a>
+  <a href="{% url 'forgot_password' %}"><button>Forgot Password</button></a>
+</body>
+</html>
