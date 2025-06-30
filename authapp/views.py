@@ -7,6 +7,8 @@ import random
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+
 
 def register_view(request):
     context = {}
@@ -130,10 +132,10 @@ def login_view(request):
 
 
 
-
 @login_required
 def dashboard_view(request):
-    return HttpResponse(f"Welcome, {request.user.username}! This is your dashboard.")
+    return redirect('dashboard_home')
+
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated

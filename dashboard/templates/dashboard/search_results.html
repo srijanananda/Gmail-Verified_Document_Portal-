@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <h2>🔍 Search Results for "{{ query }}"</h2>
+
+  <h4>📄 My Documents</h4>
+  {% if my_docs %}
+    <ul>{% for doc in my_docs %}
+      <li><strong>{{ doc.title }}</strong> ({{ doc.get_visibility_display }})</li>
+    {% endfor %}</ul>
+  {% else %}
+    <p>No results in your documents.</p>
+  {% endif %}
+
+  <h4>🔖 Tagged Documents</h4>
+  {% if tagged_docs %}
+    <ul>{% for doc in tagged_docs %}
+      <li><strong>{{ doc.title }}</strong> by {{ doc.author.email }}</li>
+    {% endfor %}</ul>
+  {% else %}
+    <p>No tagged documents found.</p>
+  {% endif %}
+
+  <h4>🌍 Public Documents</h4>
+  {% if public_docs %}
+    <ul>{% for doc in public_docs %}
+      <li><strong>{{ doc.title }}</strong> by {{ doc.author.email }}</li>
+    {% endfor %}</ul>
+  {% else %}
+    <p>No public results found.</p>
+  {% endif %}
+{% endblock %}

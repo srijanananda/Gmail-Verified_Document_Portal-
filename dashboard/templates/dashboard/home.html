@@ -1,0 +1,9 @@
+<!-- dashboard/templates/dashboard/home.html -->
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+  <div class="text-center">
+    <h2>Welcome to Your Dashboard, {{ request.user.username }}!</h2>
+    <p class="lead mt-3">Use the top menu to manage documents, search, or check notifications.</p>
+  </div>
+{% endblock %}

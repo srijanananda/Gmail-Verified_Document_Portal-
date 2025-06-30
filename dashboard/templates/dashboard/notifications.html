@@ -1,0 +1,23 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <h2>🔔 Notifications</h2>
+
+  {% if notifications %}
+    <ul class="list-group">
+      {% for notif in notifications %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          📄 You were tagged in: <strong>{{ notif.document.title }}</strong>
+          <form method="post" style="margin: 0;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_id" value="{{ notif.id }}">
+            <button class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="alert alert-info mt-4">
+      No notifications yet. You're all caught up 🎉
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <h2>📄 My Documents</h2>
+  <a href="{% url 'create_doc' %}" class="btn btn-success mb-3">+ New Document</a>
+  <table class="table table-bordered">
+    <thead><tr><th>Title</th><th>Created</th><th>Updated</th><th>Visibility</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr>
+        <td>{{ doc.title }}</td>
+        <td>{{ doc.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ doc.updated_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ doc.get_visibility_display }}</td>
+        <td>
+          <a href="{% url 'edit_doc' doc.id %}" class="btn btn-sm btn-primary">Edit</a>
+          <form action="{% url 'delete_doc' doc.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
