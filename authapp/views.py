@@ -125,3 +125,80 @@ def login_view(request):
 @login_required
 def dashboard_view(request):
     return HttpResponse(f"Welcome, {request.user.username}! This is your dashboard.")
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def protected_api_view(request):
+    return Response({"message": f"Hello {request.user.username}, you're authorized!"})
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+import random
+from django.contrib import messages
+
+# Store OTPs temporarily (you can use DB or cache later)
+RESET_OTP_STORE = {}
+
+def forgot_password_view(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+            otp = random.randint(100000, 999999)
+            RESET_OTP_STORE[email] = otp
+            send_mail(
+                "Password Reset OTP",
+                f"Your OTP is: {otp}",
+                "noreply@example.com",
+                [email],
+                fail_silently=False,
+            )
+            request.session['reset_email'] = email
+            messages.success(request, "OTP sent to your email")
+            return redirect('verify_reset_otp')
+        except User.DoesNotExist:
+            messages.error(request, "Email not found")
+
+    return render(request, 'authapp/forgot_password.html')
+
+
+def verify_reset_otp_view(request):
+    if request.method == "POST":
+        email = request.session.get("reset_email")
+        entered_otp = request.POST.get("otp")
+        if email in RESET_OTP_STORE and str(RESET_OTP_STORE[email]) == entered_otp:
+            return redirect('reset_password')
+        else:
+            messages.error(request, "Invalid OTP")
+            return redirect('forgot_password')
+    return render(request, "authapp/verify_reset_otp.html")
+
+
+def reset_password_view(request):
+    email = request.session.get("reset_email")
+
+    if not email:
+        messages.error(request, "Session expired. Start again.")
+        return redirect('forgot_password')
+
+    if request.method == "POST":
+        password = request.POST.get("password")
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Password reset successful. You can now log in.")
+            request.session.flush()  # clear session after successful reset
+            return redirect('login')
+
+        except User.DoesNotExist:
+            messages.error(request, "User not found. Try again.")
+            return redirect('forgot_password')
+
+    context = {"email": email}
+    return render(request, 'authapp/reset_password.html', context)
