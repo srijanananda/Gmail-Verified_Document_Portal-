@@ -15,11 +15,13 @@ def my_docs_view(request):
     documents = Document.objects.filter(author=request.user)
     return render(request, 'dashboard/my_docs.html', {'documents': documents})
 
-
-@login_required
 def create_notifications(doc, tagged_users):
     for user in tagged_users:
-        Notification.objects.get_or_create(user=user, document=doc)
+        Notification.objects.get_or_create(
+            user=user,
+            document=doc,
+            message=f"You were tagged in '{doc.title}'"
+        )
 
 
 @login_required
