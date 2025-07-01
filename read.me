@@ -1,0 +1,101 @@
+🛡️ Django JWT Authentication Dashboard
+A modern and secure Django-based web application featuring JWT-based authentication, user registration, password reset with OTP, and a responsive dashboard — all styled with a clean and minimal UI.
+
+📌 Features
+🔐 JWT-based login, register, and logout
+
+📧 OTP verification for password reset
+
+🧾 Beautiful, responsive UI using custom CSS and Bootstrap
+
+🗂 Dashboard module with MyDocs and Notifications
+
+🔍 Global search bar
+
+🔄 Token check + secure logout using localStorage
+
+🏗️ Project Structure
+
+DJANGO_JWT_PROJECT/
+│
+├── authapp/               # User auth: login, register, JWT views, OTP
+├── dashboard/             # Main dashboard views, routes, templates
+├── config/                # Main project settings and routing
+├── media/                 # Uploaded files
+├── templates/             # HTML files (home, login, register, etc.)
+├── db.sqlite3             # Default SQLite database
+├── .env                   # Environment config
+├── manage.py              # Django entry point
+└── requirements.txt       # Dependencies
+🚀 Setup Instructions
+1. 🧱 Clone the repo
+
+git clone <your-repo-url>
+cd DJANGO_JWT_PROJECT
+
+2. 🐍 Create & activate a virtual environment
+
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+3. 📦 Install dependencies
+
+pip install -r requirements.txt
+
+4. ⚙️ Set up environment variables
+Create a .env file with:
+
+
+SECRET_KEY=your_secret_key_here
+DEBUG=True
+5. 🔧 Apply migrations
+
+python manage.py migrate
+
+6. 🚦 Run the server
+
+python manage.py runserver
+Then open your browser and go to:
+👉 http://127.0.0.1:8000
+
+🖼 UI Highlights
+Page	Features
+home.html	Welcome screen with Sign In, Register, and Forgot Password
+register.html	Form-based sign-up with beautiful UI
+reset_password.html	Password reset with styled input
+verify_reset_otp.html	OTP entry with validation
+base.html (Dashboard)	Sticky navbar, global search, token check & logout
+
+🧠 Technologies Used
+Django
+
+JWT (via SimpleJWT or custom views)
+
+Bootstrap 5
+
+HTML + CSS (custom styling)
+
+JavaScript (for token validation & logout)
+
+mailtrap(for the OTP)
+
+🔒 Authentication Flow (JWT)
+🔐 User logs in via login/
+
+✅ Tokens (access_token, refresh_token) saved in localStorage
+
+🌐 Tokens are checked on each dashboard page
+
+🚪 Logout removes tokens and redirects to login
+
+📁 Future Enhancements (Optional Ideas)
+✅ Add email verification
+
+🌈 Add dark mode toggle
+
+📊 Add charts or analytics in dashboard
+
+🌍 Deploy using Heroku or Render
+
+👤 Author
+Made with ❤️ by Srijan Jas
