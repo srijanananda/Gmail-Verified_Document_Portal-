@@ -10,5 +10,6 @@ urlpatterns = [
     path('docs/<int:doc_id>/edit/', views.edit_doc_view, name='edit_doc'),
     path('docs/<int:doc_id>/delete/', views.delete_doc_view, name='delete_doc'),
     path('search/', views.global_search_view, name='global_search'),
+    path('docs/<int:doc_id>/download/', views.download_doc_view, name='download_doc'),
 
 ]

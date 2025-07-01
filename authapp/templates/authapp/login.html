@@ -1,60 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+  <title>Login</title>
 </head>
 <body>
-    <h2>Login</h2>
+  <h2>Login</h2>
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+  <div id="error" style="color: red;">{% if error %}{{ error }}{% endif %}</div>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
+  <form id="login-form" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
 
-    <p><a href="/">Back to Home</a></p>
+  <p><a href="/">Back to Home</a></p>
+
+  <script>
+    document.querySelector('#login-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = document.querySelector('input[name=email]').value;
+      const password = document.querySelector('input[name=password]').value;
+
+      const response = await fetch("{% url 'login' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.access) {
+        localStorage.setItem('access_token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
+        window.location.href = "/dashboard/";
+      } else {
+        document.getElementById('error').textContent = data.error || "Invalid credentials";
+      }
+    });
+  </script>
 </body>
 </html>
-<script>
-document.querySelector('form').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const email = document.querySelector('input[name=email]').value;
-  const password = document.querySelector('input[name=password]').value;
-
-  const response = await fetch("{% url 'login' %}", {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': '{{ csrf_token }}',
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({ email, password })
-  });
-
-  const data = await response.json();
-  if (data.access) {
-    localStorage.setItem('access_token', data.access);
-    localStorage.setItem('refresh_token', data.refresh);
-    alert("Login successful");
-    window.location.href = "/dashboard/";
-  } else {
-    alert(data.error || "Login failed");
-  }
-});
-</script>
-
-
-<script>
-async function callProtected() {
-  const token = localStorage.getItem('access_token');
-  const res = await fetch('/auth/api/protected/', {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
-  const data = await res.json();
-  alert(JSON.stringify(data));
-}
-</script>
