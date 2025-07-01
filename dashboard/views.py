@@ -3,8 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Document, Notification
 from .forms import DocumentForm
+from django.views.decorators.cache import never_cache
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 
-
+@never_cache
 @login_required
 def dashboard_home(request):
     user = request.user
@@ -12,12 +15,19 @@ def dashboard_home(request):
     public_docs = Document.objects.filter(visibility='public')
     tagged_docs = Document.objects.filter(visibility='tagged', tags=user)
 
-    context = {
+    html = render_to_string('dashboard/home.html', {
         'public_docs': public_docs,
-        'tagged_docs': tagged_docs
-    }
-    return render(request, 'dashboard/home.html', context)
+        'tagged_docs': tagged_docs,
+        'request': request
+    })
 
+    response = HttpResponse(html)
+    response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response['Pragma'] = 'no-cache'
+    response['Expires'] = '0'
+    return response
+
+@never_cache
 @login_required
 def my_docs_view(request):
     documents = Document.objects.filter(author=request.user)
@@ -31,7 +41,7 @@ def create_notifications(doc, tagged_users):
             message=f"You were tagged in '{doc.title}'"
         )
 
-
+@never_cache
 @login_required
 def create_doc_view(request):
     if request.method == 'POST':
@@ -50,7 +60,7 @@ def create_doc_view(request):
         form = DocumentForm()
     return render(request, 'dashboard/doc_form.html', {'form': form, 'action': 'Create'})
 
-
+@never_cache
 @login_required
 def edit_doc_view(request, doc_id):
     doc = get_object_or_404(Document, id=doc_id, author=request.user)
@@ -71,7 +81,7 @@ def edit_doc_view(request, doc_id):
         form = DocumentForm(instance=doc)
     return render(request, 'dashboard/doc_form.html', {'form': form, 'action': 'Edit'})
 
-
+@never_cache
 @login_required
 def delete_doc_view(request, doc_id):
     doc = get_object_or_404(Document, id=doc_id, author=request.user)
@@ -80,7 +90,7 @@ def delete_doc_view(request, doc_id):
         return redirect('my_docs')
     return render(request, 'dashboard/confirm_delete.html', {'doc': doc})
 
-
+@never_cache
 @login_required
 def global_search_view(request):
     query = request.GET.get('q', '')
@@ -107,7 +117,7 @@ def global_search_view(request):
 
     return render(request, 'dashboard/search_results.html', context)
 
-
+@never_cache
 @login_required
 def notifications_view(request):
     user = request.user
@@ -123,6 +133,7 @@ def notifications_view(request):
 from django.http import FileResponse, Http404
 import os
 
+@never_cache
 @login_required
 def download_doc_view(request, doc_id):
     doc = get_object_or_404(Document, id=doc_id)

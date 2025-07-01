@@ -217,3 +217,13 @@ from django.shortcuts import render
 
 def home_view(request):
     return render(request, 'authapp/home.html')
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    request.session.flush()  # ✅ clear server-side session
+    return Response({"message": "Successfully logged out — tokens cleared on client side."})
