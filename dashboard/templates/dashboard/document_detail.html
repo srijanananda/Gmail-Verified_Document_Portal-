@@ -1,0 +1,19 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+  <h2>📄 {{ doc.title }}</h2>
+
+  <p><strong>Author:</strong> {{ doc.author.email }}</p>
+  <p><strong>Visibility:</strong> {{ doc.get_visibility_display }}</p>
+  <p><strong>Uploaded On:</strong> {{ doc.created_at|date:"F j, Y, g:i a" }}</p>
+
+  {% if doc.content %}
+    <hr>
+    <p>{{ doc.content }}</p>
+  {% else %}
+    <p><em>No content available for this document.</em></p>
+  {% endif %}
+
+  {% if doc.file %}
+    <a href="{% url 'download_doc' doc.id %}" class="btn btn-primary mt-3">⬇ Download File</a>
+  {% endif %}
+{% endblock %}
